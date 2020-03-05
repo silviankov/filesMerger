@@ -1,0 +1,66 @@
+#!/bin/bash
+
+params=("$@")
+
+exitFlag=0
+
+helpMsg="Script that merges all files from several folders in one folder, without duplicates."
+
+for i in "${!params[@]}"; do
+	[ "${params[$i]}" == "-h" -o "${params[$i]}" == "--help" ] && echo $helpMsg && exitFlag=1 && break
+done
+
+[ $exitFlag -eq 1 ] && exit 0
+
+declare -a nodesArray; nodesArray=()
+
+while true; do
+	echo "Add new node folder for comparison? (1 - Yes | 0 - No ): "; read choiceFlag
+	if [ $choiceFlag -eq 0 ]; then
+		break
+	fi
+	if [ $choiceFlag -eq 1 ]; then
+		echo "Enter the node folder with absolute path: "
+		read newNodeFolder
+		nodesArray+=("$newNodeFolder")
+	fi
+done
+
+[ "${#nodesArray[@]}" -lt 2 ] && echo "Too few folders for comparison" && exit 0
+
+# echo 1 "${nodesArray[@]}"
+
+scriptLocation=$(dirname "$0")
+[ -d $scriptLocation/"nodesExpandedFolder" ] || mkdir $scriptLocation/"nodesExpandedFolder"
+
+# echo 2 $scriptLocation
+
+for elemIndex in "${!nodesArray[@]}"; do
+	[ -f $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt" ] || touch $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
+	> $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
+
+	# echo 3 $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
+	# echo 4 "${nodesArray[$elemIndex]}"
+
+	find "${nodesArray[$elemIndex]}" -type f > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
+       	
+	[ -f $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt" ] || touch $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
+	> $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
+	
+	# echo 5 $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
+
+	while IFS= read -r file; do
+		# echo 6 $file
+		md5sum "$file" >> $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
+	done < $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
+	cat $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt" | awk '{print $1}' > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnly.txt"
+	uniq $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnly.txt" > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnlyUnique.txt"
+done
+
+[ -f $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt ] && rm $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt
+[ -f $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt ] && rm $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt
+
+cat $scriptLocation/"nodesExpandedFolder"/*Md5sumOnly.txt > $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt
+uniq $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt > $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt
+
+
