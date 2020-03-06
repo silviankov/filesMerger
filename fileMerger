@@ -118,9 +118,9 @@ sed -i "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g" $scriptLocation/"nodes
 
 for elemIndex in "${nodesArray[@]}"; do
 	# echo 7 $elemIndex
-	elemIndexForSed="$(echo "$elemIndex" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
-	destFolderForSed="$(echo "$destFolder" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
-	sed -i "s/$elemIndexForSed/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
+	elemIndexForSed="$(echo "$elemIndex"/ | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
+	destFolderForSed="$(echo "$destFolder"/ | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
+	sed -i "s/^$elemIndexForSed/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 done
 
 #sed -i "s/^/$destFolder/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"

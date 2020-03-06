@@ -34,14 +34,14 @@ trueFlag=0
 
 for nodeIndex in "${!nodesArray[@]}"; do
 	for srcIndex in "${!srcArray[@]}"; do
-		[ -n "$(echo "${srcArray[$srcIndex]}" | grep "${nodesArray[$nodeIndex]}")" ] && trueFlag=1 || trueFlag=0 #&& echo trueFlag "$trueFlag"
+		[ -n "$(echo "${srcArray[$srcIndex]}" | grep "${nodesArray[$nodeIndex]}"/)" ] && trueFlag=1 || trueFlag=0 #&& echo trueFlag "$trueFlag"
 		if [ $trueFlag = 1 ]
 		then
 			#echo trueFlag "$trueFlag"
 			srcForSed="$(echo "${srcArray[$srcIndex]}" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")" #echo srcForSed "$srcForSed"
-			nodeForSed="$(echo "${nodesArray[$nodeIndex]}" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")" #echo nodeForSed "$nodeForSed"
-			destFolderForSed="$(echo "$destFolder" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")" #echo destFolderForSed "$destFolderForSed"
-			destArray[$srcIndex]="$(echo "$srcForSed" | sed "s/$nodeForSed/$destFolderForSed/g" | sed "s/+SEPARATORSPACE+/\ /g; s/+SEPARATORSLASH+/\//g")" #echo destArray[$srcIndex] "${destArray[$srcIndex]}"
+			nodeForSed="$(echo "${nodesArray[$nodeIndex]}"/ | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")" #echo nodeForSed "$nodeForSed"
+			destFolderForSed="$(echo "$destFolder"/ | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")" #echo destFolderForSed "$destFolderForSed"
+			destArray[$srcIndex]="$(echo "$srcForSed" | sed "s/^$nodeForSed/$destFolderForSed/g" | sed "s/+SEPARATORSPACE+/\ /g; s/+SEPARATORSLASH+/\//g")" #echo destArray[$srcIndex] "${destArray[$srcIndex]}"
 		fi
 	done
 done
