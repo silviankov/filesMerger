@@ -36,6 +36,15 @@ read destFolder
 scriptLocation=$(dirname "$0")
 [ -d $scriptLocation/"nodesExpandedFolder" ] || mkdir $scriptLocation/"nodesExpandedFolder"
 
+[ -f $scriptLocation/nodes.txt ] || touch $scriptLocation/nodes.txt
+> $scriptLocation/nodes.txt
+
+for elemIndex in "${nodesArray[@]}"; do
+	echo "$elemIndex" >> $scriptLocation/nodes.txt
+done
+
+echo "$destFolder" > $scriptLocation/dest.txt
+
 # echo 2 $scriptLocation
 
 for elemIndex in "${!nodesArray[@]}"; do

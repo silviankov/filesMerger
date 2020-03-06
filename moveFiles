@@ -1,0 +1,65 @@
+#!/bin/bash
+
+scriptLocation=$(dirname "$0")
+
+declare -a nodesArray; nodesArray=()
+
+while IFS= read -r linie; do
+	nodesArray+=("$linie")
+done < $scriptLocation/nodes.txt
+
+declare -a srcArray; srcArray=()
+declare -a destArray; destArray=()
+
+while IFS= read -r linie; do
+	srcArray+=("$linie")
+done < $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFile.txt"
+
+destFolder=$(cat $scriptLocation/dest.txt)
+
+nrMaxElem=${#srcArray[@]}
+nameDiff=0
+
+for ((i=0; i<$nrMaxElem - 1; i++)); do
+	for ((j=$i + 1; j<$nrMaxElem; j++)); do
+		dirName_i="$(dirname "${srcArray[$i]}")" #echo dirName_i "$dirName_i"
+		baseName_i="$(basename "${srcArray[$i]}")" #echo baseName_i "$baseName_i"
+		dirName_j="$(dirname "${srcArray[$j]}")" #echo dirName_j "$dirName_j"
+		baseName_j="$(basename "${srcArray[$j]}")" #echo baseName_j "$baseName_j"
+		[ "$baseName_i" = "$baseName_j" ] && nameDiff=$(($nameDiff + 1)) && fileToRename="${srcArray[$j]}" && newName="$dirName_j"/"DiffName"$nameDiff"_""$baseName_j" && mv "$fileToRename" "$newName" && srcArray[$j]="$newName"
+	done
+done
+
+trueFlag=0
+
+for nodeIndex in "${!nodesArray[@]}"; do
+	for srcIndex in "${!srcArray[@]}"; do
+		[ -n "$(echo "${srcArray[$srcIndex]}" | grep "${nodesArray[$nodeIndex]}")" ] && trueFlag=1 || trueFlag=0 #&& echo trueFlag "$trueFlag"
+		if [ $trueFlag = 1 ]
+		then
+			#echo trueFlag "$trueFlag"
+			srcForSed="$(echo "${srcArray[$srcIndex]}" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")" #echo srcForSed "$srcForSed"
+			nodeForSed="$(echo "${nodesArray[$nodeIndex]}" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")" #echo nodeForSed "$nodeForSed"
+			destFolderForSed="$(echo "$destFolder" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")" #echo destFolderForSed "$destFolderForSed"
+			destArray[$srcIndex]="$(echo "$srcForSed" | sed "s/$nodeForSed/$destFolderForSed/g" | sed "s/+SEPARATORSPACE+/\ /g; s/+SEPARATORSLASH+/\//g")" #echo destArray[$srcIndex] "${destArray[$srcIndex]}"
+		fi
+	done
+done
+
+[ -f $scriptLocation/"nodesExpandedFolder"/destArray.txt ] || touch $scriptLocation/"nodesExpandedFolder"/destArray.txt
+> $scriptLocation/"nodesExpandedFolder"/destArray.txt
+
+for dest in "${destArray[@]}"; do
+	echo "$dest" >> $scriptLocation/"nodesExpandedFolder"/destArray.txt
+done
+
+[ -f $scriptLocation/"nodesExpandedFolder"/srcArray.txt ] || touch $scriptLocation/"nodesExpandedFolder"/srcArray.txt
+> $scriptLocation/"nodesExpandedFolder"/srcArray.txt
+
+for src in "${srcArray[@]}"; do
+	echo "$src" >> $scriptLocation/"nodesExpandedFolder"/srcArray.txt
+done
+
+for index in "${!srcArray}"; do
+	mv "${srcArray[$index]}" "${destArray[$index]}"
+done
