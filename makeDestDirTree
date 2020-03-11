@@ -3,7 +3,7 @@
 scriptLocation=$(dirname "$0")
 
 while IFS= read -r linie; do
-	mkdir -p "$linie"
+	[ -d "$linie" ] ||  mkdir -p "$linie"
 done < $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt" 
 
 
