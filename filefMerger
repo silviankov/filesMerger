@@ -4,7 +4,7 @@ params=("$@")
 scriptLocation=$(dirname "$0")
 exitFlag=0
 
-helpMsg="Script that merges all files from several folders in one folder, without duplicates. Provide a srcFile.txt and a destFile.txt in this script's folder and in these files write the sources folders to merge files from and the destination folder, each on a different line, without an ending slash."
+helpMsg="Script that merges all files from several folders in one folder, without duplicates. Provide a srcFile.txt and a destFile.txt in this script's folder and in these files write the sources folders to merge files from and the destination folder, each on a different line, without an ending slash. All paths must be absolute, no tilde, no dot, no nothing, just pure absolute paths."
 
 for i in "${!params[@]}"; do
 	[ "${params[$i]}" == "-h" -o "${params[$i]}" == "--help" ] && echo $helpMsg && exitFlag=1 && break
@@ -56,14 +56,14 @@ for elemIndex in "${!nodesArray[@]}"; do
 		md5sum "$file" >> $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
 	done < $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
 	cat $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt" | awk '{print $1}' > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnly.txt"
-	uniq $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnly.txt" > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnlyUnique.txt"
+	sort $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnly.txt" | uniq > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnlyUnique.txt"
 done
 
-[ -f $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt ] && rm $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt
-[ -f $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt ] && rm $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt
+# [ -f $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt ] && rm $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt
+# [ -f $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt ] && rm $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt
 
 cat $scriptLocation/"nodesExpandedFolder"/*Md5sumOnly.txt > $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt
-uniq $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt > $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt
+sort $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnly.txt | uniq > $scriptLocation/"nodesExpandedFolder"/nodesExpandedMd5sumsOnlyUnique.txt
 
 [ -f $scriptLocation/"nodesExpandedFolder"/"nodesExpandedMd5sumsUnique.txt" ] || touch $scriptLocation/"nodesExpandedFolder"/"nodesExpandedMd5sumsUnique.txt"
 > $scriptLocation/"nodesExpandedFolder"/"nodesExpandedMd5sumsUnique.txt"
@@ -101,7 +101,7 @@ while IFS= read -r file; do
 	echo "$fileDir" >> $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFileDirectories.txt"
 done < $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFile.txt"
 
-uniq $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFileDirectories.txt" > $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFileDirectoriesUnique.txt"
+sort $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFileDirectories.txt" | uniq > $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFileDirectoriesUnique.txt"
 
 cp $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFileDirectoriesUnique.txt" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 sed -i "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
@@ -113,7 +113,15 @@ for elemIndex in "${nodesArray[@]}"; do
 	sed -i "s/^$elemIndexForSed/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 done
 
+for elemIndex in "${nodesArray[@]}"; do
+	# echo 7 $elemIndex
+	elemIndexForSed="$(echo "$elemIndex" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
+	destFolderForSed="$(echo "$destFolder" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
+	sed -i "s/^$elemIndexForSed/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
+done
+
 #sed -i "s/^/$destFolder/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 sed -i "s/+SEPARATORSPACE+/\ /g; s/+SEPARATORSLASH+/\//g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 
-
+cp $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt" $scriptLocation/"nodesExpandedFolder"/"destFileDirectoriesBKP.txt"
+sort $scriptLocation/"nodesExpandedFolder"/"destFileDirectoriesBKP.txt" | uniq > $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"

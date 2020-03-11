@@ -60,6 +60,6 @@ for src in "${srcArray[@]}"; do
 	echo "$src" >> $scriptLocation/"nodesExpandedFolder"/srcArray.txt
 done
 
-for index in "${!srcArray[@]}"; do
-	mv "${srcArray[$index]}" "${destArray[$index]}"
-done
+# for index in "${!srcArray[@]}"; do
+# 	mv "${srcArray[$index]}" "${destArray[$index]}"
+# done
