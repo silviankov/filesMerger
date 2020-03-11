@@ -54,7 +54,7 @@ for elemIndex in "${!nodesArray[@]}"; do
 	# echo 3 $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
 	# echo 4 "${nodesArray[$elemIndex]}"
 
-	find "${nodesArray[$elemIndex]}" -type f > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
+	find "${nodesArray[$elemIndex]}" -type f ! -iname "*.part" > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
        	
 	[ -f $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt" ] || touch $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
 	> $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
