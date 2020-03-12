@@ -3,3 +3,4 @@ dest.txt
 nodes.txt
 srcFile.txt
 destFile.txt
+*.swp
