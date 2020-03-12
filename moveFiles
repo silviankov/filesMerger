@@ -20,15 +20,16 @@ destFolder=$(cat $scriptLocation/dest.txt)
 nrMaxElem=${#srcArray[@]}
 nameDiff=0
 
-for ((i=0; i<$nrMaxElem - 1; i++)); do
-	for ((j=$i + 1; j<$nrMaxElem; j++)); do
-		dirName_i="$(dirname "${srcArray[$i]}")" #echo dirName_i "$dirName_i"
-		baseName_i="$(basename "${srcArray[$i]}")" #echo baseName_i "$baseName_i"
-		dirName_j="$(dirname "${srcArray[$j]}")" #echo dirName_j "$dirName_j"
-		baseName_j="$(basename "${srcArray[$j]}")" #echo baseName_j "$baseName_j"
-		[ "$baseName_i" = "$baseName_j" ] && nameDiff=$(($nameDiff + 1)) && fileToRename="${srcArray[$j]}" && newName="$dirName_j"/"DiffName"$nameDiff"_""$baseName_j" && mv "$fileToRename" "$newName" && srcArray[$j]="$newName"
-	done
-done
+# for ((i=0; i<$nrMaxElem - 1; i++)); do
+# 	for ((j=$i + 1; j<$nrMaxElem; j++)); do
+# 		dirName_i="$(dirname "${srcArray[$i]}")" #echo dirName_i "$dirName_i"
+# 		baseName_i="$(basename "${srcArray[$i]}")" #echo baseName_i "$baseName_i"
+# 		dirName_j="$(dirname "${srcArray[$j]}")" #echo dirName_j "$dirName_j"
+# 		baseName_j="$(basename "${srcArray[$j]}")" #echo baseName_j "$baseName_j"
+# 		echo "  i:" $i && echo "  j:" $j
+# 		[ "$baseName_i" = "$baseName_j" ] && nameDiff=$(($nameDiff + 1)) && fileToRename="${srcArray[$j]}" && newName="$dirName_j"/"DiffName"$nameDiff"_""$baseName_j" && mv "$fileToRename" "$newName" && srcArray[$j]="$newName" && echo "  nameDiff:" $nameDiff 
+# 	done
+# done
 
 trueFlag=0
 

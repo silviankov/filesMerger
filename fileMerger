@@ -34,6 +34,7 @@ read destFolder
 # echo 1 "${nodesArray[@]}"
 
 scriptLocation=$(dirname "$0")
+[ -d $scriptLocation/"nodesExpandedFolder" ] && rm -rf $scriptLocation/"nodesExpandedFolder"
 [ -d $scriptLocation/"nodesExpandedFolder" ] || mkdir $scriptLocation/"nodesExpandedFolder"
 
 [ -f $scriptLocation/nodes.txt ] || touch $scriptLocation/nodes.txt
