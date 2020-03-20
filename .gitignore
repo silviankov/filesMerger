@@ -4,3 +4,5 @@ nodes.txt
 srcFile.txt
 destFile.txt
 *.swp
+repairNames.sh
+nameCheckerWorkDir

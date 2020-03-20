@@ -1,0 +1,38 @@
+#!/bin/bash
+
+scriptLocation=$(dirname "$0")
+
+declare -a nodesArray; nodesArray=()
+
+while IFS= read -r linie; do
+	nodesArray+=("$linie")
+done < $scriptLocation/nodes.txt
+
+# declare -a srcArray; srcArray=()
+# declare -a destArray; destArray=()
+# 
+# while IFS= read -r linie; do
+# 	srcArray+=("$linie")
+# done < $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFile.txt"
+# 
+# destFolder=$(cat $scriptLocation/dest.txt)
+
+[ -d $scriptLocation/"nameCheckerWorkDir" ] && rm -rf $scriptLocation/"nameCheckerWorkDir"
+[ -d $scriptLocation/"nameCheckerWorkDir" ] || mkdir  $scriptLocation/"nameCheckerWorkDir"
+
+cp $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFile.txt" $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheck.txt"
+sed -i 's/\//+SEPARATORSLASH+/g; s/\ /+SEPARATORSPACE+/g' $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheck.txt"
+
+for node in "${nodesArray[@]}"; do
+	nodeForSed="$(echo "$node"/ | sed 's/\//+SEPARATORSLASH+/g; s/\ /+SEPARATORSPACE+/g')"
+	sed -i "s/^$nodeForSed//g" $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheck.txt"
+done
+
+sed -i 's/+SEPARATORSLASH+/\//g; s/+SEPARATORSPACE+/\ /g' $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheck.txt"
+cat $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheck.txt" | sort | uniq -c > $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheckSortedCounted.txt"
+cat $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheckSortedCounted.txt" | awk '$1>=2' > $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheckSortedCountedDuplicates.txt"
+
+warningMsg="Yo check them files in $scriptLocation/nameCheckerWorkDir/inputFileNameCheckSortedCountedDuplicates.txt"
+chillMsg="All cool dawg"
+
+[ -n "$(cat $scriptLocation/"nameCheckerWorkDir"/"inputFileNameCheckSortedCountedDuplicates.txt")" ] && echo $warningMsg || echo $chillMsg

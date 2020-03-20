@@ -54,7 +54,7 @@ for elemIndex in "${!nodesArray[@]}"; do
 
 	while IFS= read -r file; do
 		# echo 6 $file
-		echo "Generating md5sum for: " $file &&  md5sum "$file" >> $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
+		echo "Generating md5sum for: " $file && md5sum "$file" >> $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
 	done < $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
 	cat $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt" | awk '{print $1}' > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnly.txt"
 	sort $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnly.txt" | uniq > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sumOnlyUnique.txt"
