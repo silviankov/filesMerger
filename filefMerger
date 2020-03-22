@@ -107,12 +107,12 @@ sort $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFileDirectories.tx
 cp $scriptLocation/"nodesExpandedFolder"/"nodesExpandedInputFileDirectoriesUnique.txt" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 sed -i "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 
-for elemIndex in "${nodesArray[@]}"; do
-	# echo 7 $elemIndex
-	elemIndexForSed="$(echo "$elemIndex"/ | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
-	destFolderForSed="$(echo "$destFolder"/ | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
-	sed -i "s/^$elemIndexForSed$/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
-done
+# for elemIndex in "${nodesArray[@]}"; do
+# 	# echo 7 $elemIndex
+# 	elemIndexForSed="$(echo "$elemIndex"/ | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
+# 	destFolderForSed="$(echo "$destFolder"/ | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
+# 	sed -i "s/^$elemIndexForSed$/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
+# done
 
 for elemIndex in "${nodesArray[@]}"; do
 	# echo 7 $elemIndex
@@ -128,12 +128,12 @@ for elemIndex in "${nodesArray[@]}"; do
 	sed -i "s/^$elemIndexForSed/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 done
 
-for elemIndex in "${nodesArray[@]}"; do
-	# echo 7 $elemIndex
-	elemIndexForSed="$(echo "$elemIndex" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
-	destFolderForSed="$(echo "$destFolder" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
-	sed -i "s/^$elemIndexForSed/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
-done
+# for elemIndex in "${nodesArray[@]}"; do
+# 	# echo 7 $elemIndex
+# 	elemIndexForSed="$(echo "$elemIndex" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
+# 	destFolderForSed="$(echo "$destFolder" | sed "s/\ /+SEPARATORSPACE+/g; s/\//+SEPARATORSLASH+/g")"
+# 	sed -i "s/^$elemIndexForSed/$destFolderForSed/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
+# done
 
 #sed -i "s/^/$destFolder/g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
 sed -i "s/+SEPARATORSPACE+/\ /g; s/+SEPARATORSLASH+/\//g" $scriptLocation/"nodesExpandedFolder"/"destFileDirectories.txt"
