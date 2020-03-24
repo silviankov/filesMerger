@@ -1,0 +1,46 @@
+#!/bin/bash
+
+scriptLocation=$(dirname "$0")
+
+declare -a nodesArray; nodesArray=()
+
+while IFS= read -r srcLine; do
+	nodesArray+=("$srcLine")
+done < $scriptLocation/"srcFile.txt"
+
+destFolder="$(cat $scriptLocation/"destFile.txt")"
+
+theString="$(cat $scriptLocation/theString.txt)"
+
+[ -d $scriptLocation/remainingCheckerWorkDir ] && rm -rf $scriptLocation/remainingCheckerWorkDir
+[ -d $scriptLocation/remainingCheckerWorkDir ] || mkdir $scriptLocation/remainingCheckerWorkDir 
+
+[ -f $scriptLocation/remainingCheckerWorkDir/remainingFilesToDelete.txt ] || touch $scriptLocation/remainingCheckerWorkDir/remainingFilesToDelete.txt
+> $scriptLocation/remainingCheckerWorkDir/remainingFilesToDelete.txt
+
+for elemIndex in "${!nodesArray[@]}"; do
+	[ -f $scriptLocation/remainingCheckerWorkDir/node"$elemIndex"ExpandedRemaining.txt ] || touch $scriptLocation/remainingCheckerWorkDir/node"$elemIndex"ExpandedRemaining.txt
+	> $scriptLocation/remainingCheckerWorkDir/node"$elemIndex"ExpandedRemaining.txt
+
+	# echo 3 $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
+	# echo 4 "${nodesArray[$elemIndex]}"
+
+	find "${nodesArray[$elemIndex]}" -iname "$theString*" -type f ! -iname "*.part" > $scriptLocation/remainingCheckerWorkDir/node"$elemIndex"ExpandedRemaining.txt
+       	
+	# [ -f $scriptLocation/remainingCheckerWorkDir/node"$elemIndex"ExpandedRemainingMd5sum.txt ] || touch $scriptLocation/remainingCheckerWorkDir/node"$elemIndex"ExpandedRemainingMd5sum.txt
+	# > $scriptLocation/remainingCheckerWorkDir/node"$elemIndex"ExpandedRemainingMd5sum.txt
+	
+	# echo 5 $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
+
+	while IFS= read -r file; do
+		# echo 6 $file
+		echo "Checking remaining file: " $file
+		zaMd5sum=$(md5sum "$file" | awk '{print $1}')
+		[ -n "$(grep $zaMd5sum $scriptLocation/nodesExpandedFolder/nodesExpandedMd5sumsUniqueInputFile.txt)" ] && echo "$file" >> $scriptLocation/remainingCheckerWorkDir/remainingFilesToDelete.txt
+	done < $scriptLocation/remainingCheckerWorkDir/node"$elemIndex"ExpandedRemaining.txt
+	
+done
+
+while IFS= read -r file; do
+	rm "$file"
+done < $scriptLocation/remainingCheckerWorkDir/remainingFilesToDelete.txt

@@ -1,12 +1,10 @@
 #!/bin/bash
 
 params=("$@")
-
 scriptLocation=$(dirname "$0")
-
 exitFlag=0
 
-helpMsg="Script that merges all files from several folders in one folder, without duplicates."
+helpMsg="Script that merges all files from several folders in one folder, without duplicates. Provide a srcFile.txt and a destFile.txt in this script's folder and in these files write the sources folders to merge files from and the destination folder, each on a different line, without an ending slash. All paths must be absolute, no tilde, no dot, no nothing, just pure absolute paths. Provide a file named theString.txt in this script's folder, which contains the string that you want the files to be searched, compared and merged by."
 
 for i in "${!params[@]}"; do
 	[ "${params[$i]}" == "-h" -o "${params[$i]}" == "--help" ] && echo $helpMsg && exitFlag=1 && break
@@ -16,20 +14,13 @@ done
 
 declare -a nodesArray; nodesArray=()
 
-while true; do
-	echo "Add new node folder for comparison? (1 - Yes | 0 - No ): "; read choiceFlag
-	if [ $choiceFlag -eq 0 ]; then
-		break
-	fi
-	if [ $choiceFlag -eq 1 ]; then
-		echo "Enter the node folder with absolute path (no tilde, no dot, no nothing, we need the full absolute path), without and ending slash: "
-		read newNodeFolder
-		nodesArray+=("$newNodeFolder")
-	fi
-done
+while IFS= read -r srcLine; do
+	nodesArray+=("$srcLine")
+done < $scriptLocation/"srcFile.txt"
 
-echo "Enter the destination folder with absolute path (no tilde, no dot, no nothing, we need the full absolute path), without an ending slash: "
-read destFolder
+destFolder="$(cat $scriptLocation/"destFile.txt")"
+
+theString="$(cat $scriptLocation/theString.txt)"
 
 [ "${#nodesArray[@]}" -lt 2 ] && echo "Too few folders for comparison" && exit 0
 
@@ -56,7 +47,7 @@ for elemIndex in "${!nodesArray[@]}"; do
 	# echo 3 $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
 	# echo 4 "${nodesArray[$elemIndex]}"
 
-	find "${nodesArray[$elemIndex]}" -type f ! -iname "*.part" > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
+	find "${nodesArray[$elemIndex]}" -iname "$theString*" -type f ! -iname "*.part" > $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"Expanded.txt"
        	
 	[ -f $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt" ] || touch $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
 	> $scriptLocation/"nodesExpandedFolder"/"node"$elemIndex"ExpandedMd5sum.txt"
