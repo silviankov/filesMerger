@@ -6,3 +6,4 @@ destFile.txt
 *.swp
 repairNames.sh
 nameCheckerWorkDir
+remainingCheckerWorkDir/
